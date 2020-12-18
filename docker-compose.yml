@@ -8,6 +8,8 @@ services:
   redis:
     image: redis:5.0.5-alpine
     restart: on-failure
+    ports:
+      - 6379:6379
 
   load-scale:
     build: .
@@ -17,23 +19,22 @@ services:
       - prometheus
       - grafana
     environment:
-      - HOST_URL=${HOST_URL}
+      - NO_SUBSCRIBE=no-active
+      - HOST_URL=https://chat.example.com
+      - SSL_ENABLED=yes
       - REDIS_HOST=redis
       - TRY_REGISTER=no
-      - HOW_MANY=${HOW_MANY:-2000}
-      - SEATS_PER_ROOM=${SEATS_PER_ROOM:-100}
-      - LOGIN_BATCH=${LOGIN_BATCH:-20}
-      - MESSAGE_SENDING_RATE=0.001428571
-      - ROOM_ID=${ROOM_ID:-load-test-private-%s}
-      - OPEN_ROOM=yes
-      - SSL_ENABLED=no
-      #- LOGIN_OFFSET=1
-      #- INITIAL_LOGIN_OFFSET=1
+      - HOW_MANY=100
+      - SEATS_PER_ROOM=100
+      - LOGIN_BATCH=20
       - SEND_MESSAGES=yes
-      - CLIENT_TYPE=android
-      - USERS_USERNAME=${USERS_USERNAME:-test.user.%s}
-      - USERS_PASSWORD=${USERS_PASSWORD}
-      #- JOIN_ROOM=kceGi2FBKFePvnj6Q
+      - MESSAGE_SENDING_RATE=0.0001
+      - ROOM_ID=b4XgrgKajTXSqAsNW
+      - OPEN_ROOM=no
+      - LOGIN_OFFSET=671
+      - CLIENT_TYPE=web
+      - USERS_USERNAME=zz%s
+      - USERS_PASSWORD=test1
 
   prometheus:
     image: prom/prometheus:v2.5.0

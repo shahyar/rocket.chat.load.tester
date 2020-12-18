@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 import * as prom from './prom';
 import { getRoomId } from './utils';
 
+global.FormData = function FormData() {}
 global.fetch = fetch;
 
 export const clients = [];
@@ -172,11 +173,15 @@ export async function login(client, credentials, type, userCount) {
 					await client.subscribeUserData();
 				} else if (NO_SUBSCRIBE === 'no-active') {
 					await Promise.all([
-						'roles',
-						'webdavAccounts',
-						'userData',
-						// 'activeUsers'
-					].map(stream => client.subscribe(stream, '')));
+						'roles-change',
+						'Users:NameChanged',
+						'Users:Deleted',
+						'updateAvatar',
+						'user-status',
+						'updateEmojiCustom',
+						'deleteEmojiCustom',
+					].map(stream => client.subscribe('stream-notify-logged', stream)));
+          console.log('subbednothing' + credentials.username)
 				}
 				break;
 
@@ -376,7 +381,7 @@ export const doLogin = async (countInit, batchSize = 1, type = 'web') => {
 			continue;
 		}
 
-		// console.log('login', i);
+		console.log('login', i);
 
 		const userCount = countInit + i;
 
